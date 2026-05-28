@@ -2,7 +2,7 @@ const empleados = document.getElementById('empleados');
 
 const fetchEmpleados = async (cantidad) => {
     try {
-        const respuesta = await fetch('https://randomuser.me/api/?results/=${cantidad}');
+        const respuesta = await fetch(`https://randomuser.me/api/?results=${cantidad}`);
         if (!respuesta.ok) throw new Error('Error al conectar la API');
 
         const datos = await respuesta.json();
@@ -48,17 +48,22 @@ const crearTarjetaEmpleado = (empleado) => {
 // 4. Función orquestadora: Trae los datos y los pinta en el DOM
 const inicializarPortal = async () => {
     // Pedimos 12 empleados para el ejemplo
-    const empleados = await fetchEmpleados(12);
+    const listaEmpleados = await fetchEmpleados(12);
 
-    // Si la API falla, empleados será un array vacío y no rompe nada
-    if (empleados.length > 0) {
+    // Si la API falla, listaEmpleados será un array vacío y no rompe nada
+    if (listaEmpleados.length > 0) {
         // Mapeamos el array de datos a un array de strings HTML y los unimos
-        const htmlTarjetas = empleados.map(crearTarjetaEmpleado).join('');
+        const htmlTarjetas = listaEmpleados.map(crearTarjetaEmpleado).join('');
 
         // Inyectamos todo el bloque HTML en el contenedor de una sola vez (mejor rendimiento)
-        contenedorEmpleados.innerHTML = htmlTarjetas;
+        if (empleados) {
+            empleados.innerHTML = htmlTarjetas;
+        }
     }
 };
 
 // 5. Arrancamos la app cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', inicializarPortal);
+
+// Escucha del botón manual
+document.getElementById('btn')?.addEventListener('click', inicializarPortal);
